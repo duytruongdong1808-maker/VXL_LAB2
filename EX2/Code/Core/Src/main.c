@@ -167,7 +167,6 @@ uint8_t dot_state = 0;
 uint8_t counter = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
     if(htim->Instance == TIM2){
-        // tắt tất cả EN trước khi đổi
     	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_SET);
 
         switch(led_index){
@@ -193,11 +192,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
                 break;
         }
 
-        // update index
         led_index++;
         if(led_index >= 4) led_index = 0;
 
-        // counter dùng cho LED DOT
         counter++;
         if(counter >= 2){ // 500ms * 2 = 1s
             counter = 0;
