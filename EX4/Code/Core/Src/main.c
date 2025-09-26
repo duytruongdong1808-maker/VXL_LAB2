@@ -165,9 +165,8 @@ void display7SEG(uint8_t num){
 const int MAX_LED = 4;
 int index_led = 0;
 int led_buffer[4] = {1, 2, 3, 4};
-uint8_t dot_state = 0;
-uint8_t led_state = 0;
-uint8_t counter = 0;
+uint8_t dot_counter = 0;
+uint8_t led_counter = 0;
 
 void update7SEG(int index) {
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_SET);
@@ -184,18 +183,21 @@ void update7SEG(int index) {
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    if(htim->Instance == TIM2) {
-    	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    	counter++;
-        if(counter >= 2) {
-            counter = 0;
-            dot_state = !dot_state;
-            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, dot_state);
-            update7SEG(index_led);
-            index_led++;
-			if(index_led >= MAX_LED) index_led = 0;
-        }
-    }
+	if (htim->Instance == TIM2) {
+		led_counter++;
+		if (led_counter >= 2) {
+			led_counter = 0;
+			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+		}
+		update7SEG(index_led);
+		index_led++;
+		if (index_led >= MAX_LED) index_led = 0;
+		dot_counter++;
+		if (dot_counter >= 4) {
+			dot_counter = 0;
+			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
+		}
+	}
 }
 
 /* USER CODE END 0 */
@@ -300,7 +302,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 7999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 499;
+  htim2.Init.Period = 249;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -339,11 +341,11 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7
-                          |GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_SET);
+                          |GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3
-                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_SET);
+                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PA4 PA5 PA6 PA7
                            PA8 PA9 */
