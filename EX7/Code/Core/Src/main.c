@@ -165,7 +165,6 @@ void display7SEG(uint8_t num){
 const int MAX_LED = 4;
 int index_led = 0;
 int led_buffer[4];
-uint8_t dot_counter = 0;
 uint8_t led_counter = 0;
 
 void update7SEG(int index) {
