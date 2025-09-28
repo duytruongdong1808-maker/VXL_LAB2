@@ -37,13 +37,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  000161f3  00000000  00000000  0002afd8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00009acb  00000000  00000000  000411cb  2**0
+ 17 .debug_line   00009ac7  00000000  00000000  000411cb  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00081e90  00000000  00000000  0004ac96  2**0
+ 18 .debug_str    00081e90  00000000  00000000  0004ac92  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  000ccb26  2**0
+ 19 .comment      00000053  00000000  00000000  000ccb22  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00002720  00000000  00000000  000ccb7c  2**2
+ 20 .debug_frame  00002720  00000000  00000000  000ccb78  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -201,7 +201,7 @@ void display7SEG(uint8_t num){
  800023a:	2104      	movs	r1, #4
  800023c:	489d      	ldr	r0, [pc, #628]	; (80004b4 <display7SEG+0x368>)
  800023e:	f001 f861 	bl	8001304 <HAL_GPIO_WritePin>
-HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
  8000242:	2200      	movs	r2, #0
  8000244:	2108      	movs	r1, #8
  8000246:	489b      	ldr	r0, [pc, #620]	; (80004b4 <display7SEG+0x368>)
