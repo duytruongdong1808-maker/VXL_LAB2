@@ -240,14 +240,13 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
-  int hour = 23 , minute = 59 , second = 57;
+  int hour = 20 , minute = 54 , second = 58;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
 	  second++;
 	  if (second >= 60) {
 	  second = 0;
@@ -261,7 +260,10 @@ int main(void)
 	  hour = 0;
 	  }
 	  updateClockBuffer(hour,minute);
+
 	  HAL_Delay(1000);
+    /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
