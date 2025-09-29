@@ -196,7 +196,7 @@ int timer2_counter = 0;
 int timer2_flag = 0;
 int timer3_counter = 0;
 int timer3_flag = 0;
-int TIMER_CYCLE = 10;
+int TIMER_CYCLE = 1;
 
 void setTimer0(int duration) {
     timer0_counter = duration / TIMER_CYCLE;
@@ -395,8 +395,8 @@ int main(void)
   int hour = 20 , minute = 59 , second = 55;
   setTimer0(1000);
   setTimer1(250);
-  setTimer2(120);
-  setTimer3(10);
+  setTimer2(80);
+  setTimer3(2);
   updateClockBuffer(hour, minute);
   buildScroll_A();
   sliceToVisible();
@@ -437,9 +437,9 @@ int main(void)
 	  }
 	  if (timer2_flag == 1) {
 	    timer2_flag = 0;
-	    setTimer2(120);      // giữ tốc độ cuộn
+	    setTimer2(80);      // giữ tốc độ cuộn
 
-	    // dịch cửa sổ sang TRÁI: tăng shift_index
+	    // dịch cửa sổ sang TR�?I: tăng shift_index
 	    shift_index++;
 	    if (shift_index >= SCROLL_WIDTH) shift_index = 0;
 
@@ -448,7 +448,7 @@ int main(void)
 
 	  if (timer3_flag == 1) {
 		  timer3_flag = 0;
-		  setTimer3(10);
+		  setTimer3(2);
 		  updateLEDMatrix(index_led_matrix);
 		  index_led_matrix++;
 		  if (index_led_matrix >= MAX_LED_MATRIX) index_led_matrix = 0;
@@ -516,7 +516,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 7999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 9;
+  htim2.Init.Period = 1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)

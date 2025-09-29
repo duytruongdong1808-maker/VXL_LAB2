@@ -693,7 +693,7 @@ void updateClockBuffer(int hour, int minute)
 int timer2_flag = 0;
 int timer3_counter = 0;
 int timer3_flag = 0;
-int TIMER_CYCLE = 10;
+int TIMER_CYCLE = 1;
 
 void setTimer0(int duration) {
  80005e0:	b480      	push	{r7}
@@ -1355,11 +1355,11 @@ int main(void)
   setTimer1(250);
  8000a98:	20fa      	movs	r0, #250	; 0xfa
  8000a9a:	f7ff fdbb 	bl	8000614 <setTimer1>
-  setTimer2(120);
- 8000a9e:	2078      	movs	r0, #120	; 0x78
+  setTimer2(80);
+ 8000a9e:	2050      	movs	r0, #80	; 0x50
  8000aa0:	f7ff fdd2 	bl	8000648 <setTimer2>
-  setTimer3(10);
- 8000aa4:	200a      	movs	r0, #10
+  setTimer3(2);
+ 8000aa4:	2002      	movs	r0, #2
  8000aa6:	f7ff fde9 	bl	800067c <setTimer3>
   updateClockBuffer(hour, minute);
  8000aaa:	68b9      	ldr	r1, [r7, #8]
@@ -1477,11 +1477,11 @@ int main(void)
  8000b50:	4b1e      	ldr	r3, [pc, #120]	; (8000bcc <main+0x164>)
  8000b52:	2200      	movs	r2, #0
  8000b54:	601a      	str	r2, [r3, #0]
-	    setTimer2(120);      // giữ tốc độ cuộn
- 8000b56:	2078      	movs	r0, #120	; 0x78
+	    setTimer2(80);      // giữ tốc độ cuộn
+ 8000b56:	2050      	movs	r0, #80	; 0x50
  8000b58:	f7ff fd76 	bl	8000648 <setTimer2>
 
-	    // dịch cửa sổ sang TRÁI: tăng shift_index
+	    // dịch cửa sổ sang TR�?I: tăng shift_index
 	    shift_index++;
  8000b5c:	4b1c      	ldr	r3, [pc, #112]	; (8000bd0 <main+0x168>)
  8000b5e:	681b      	ldr	r3, [r3, #0]
@@ -1512,8 +1512,8 @@ int main(void)
  8000b84:	4b14      	ldr	r3, [pc, #80]	; (8000bd8 <main+0x170>)
  8000b86:	2200      	movs	r2, #0
  8000b88:	601a      	str	r2, [r3, #0]
-		  setTimer3(10);
- 8000b8a:	200a      	movs	r0, #10
+		  setTimer3(2);
+ 8000b8a:	2002      	movs	r0, #2
  8000b8c:	f7ff fd76 	bl	800067c <setTimer3>
 		  updateLEDMatrix(index_led_matrix);
  8000b90:	4b12      	ldr	r3, [pc, #72]	; (8000bdc <main+0x174>)
@@ -1681,9 +1681,9 @@ static void MX_TIM2_Init(void)
  8000c84:	4b19      	ldr	r3, [pc, #100]	; (8000cec <MX_TIM2_Init+0x94>)
  8000c86:	2200      	movs	r2, #0
  8000c88:	609a      	str	r2, [r3, #8]
-  htim2.Init.Period = 9;
+  htim2.Init.Period = 1;
  8000c8a:	4b18      	ldr	r3, [pc, #96]	; (8000cec <MX_TIM2_Init+0x94>)
- 8000c8c:	2209      	movs	r2, #9
+ 8000c8c:	2201      	movs	r2, #1
  8000c8e:	60da      	str	r2, [r3, #12]
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
  8000c90:	4b16      	ldr	r3, [pc, #88]	; (8000cec <MX_TIM2_Init+0x94>)
