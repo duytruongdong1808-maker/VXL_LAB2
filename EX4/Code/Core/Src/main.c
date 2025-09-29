@@ -167,6 +167,16 @@ int index_led = 0;
 int led_buffer[4] = {1, 2, 3, 4};
 uint8_t dot_counter = 0;
 uint8_t led_counter = 0;
+uint8_t seg_counter = 0;
+uint16_t seg_update_rate = 1;
+
+void Led_frequency(uint16_t freq) {
+    if (freq == 0) return;
+    // Mỗi LED cần quét 1 lần → tổng 4 lần
+    // Với ngắt TIM2 = 1ms → 1000Hz
+    seg_update_rate = 1000 / freq ;
+    if (seg_update_rate < 1) seg_update_rate = 1;
+}
 
 void update7SEG(int index) {
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_SET);
@@ -189,9 +199,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 			led_counter = 0;
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 		}
-		update7SEG(index_led);
-		index_led++;
-		if (index_led >= MAX_LED) index_led = 0;
+
+		seg_counter++;
+		if (seg_counter >= seg_update_rate) {
+			seg_counter = 0;
+			update7SEG(index_led);
+			index_led++;
+			if (index_led >= MAX_LED) index_led = 0;
+		}
+
 		dot_counter++;
 		if (dot_counter >= 4) {
 			dot_counter = 0;
@@ -233,6 +249,7 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
+  Led_frequency(1000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -341,11 +358,11 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7
-                          |GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
+                          |GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3
-                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_RESET);
+                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_SET);
 
   /*Configure GPIO pins : PA4 PA5 PA6 PA7
                            PA8 PA9 */
