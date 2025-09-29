@@ -196,7 +196,7 @@ int timer2_counter = 0;
 int timer2_flag = 0;
 int timer3_counter = 0;
 int timer3_flag = 0;
-int TIMER_CYCLE = 10;
+int TIMER_CYCLE = 1;
 
 void setTimer0(int duration) {
     timer0_counter = duration / TIMER_CYCLE;
@@ -246,13 +246,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 const int MAX_LED_MATRIX = 8;
 int index_led_matrix = 0;
 uint8_t matrix_buffer[8] = {
-	0b01111100,
+	0b00111000,
 	0b01000100,
-	0b01000100,
-	0b01111100,
-	0b01000100,
-	0b01000100,
-	0b01000100,
+	0b10000010,
+	0b11111110,
+	0b10000010,
+	0b10000010,
+	0b10000010,
 	0b00000000
 };
 
@@ -280,26 +280,27 @@ const uint16_t colPins[8] = {
     GPIO_PIN_15
 };
 
-void updateLEDMatrix(int index){
+void updateLEDMatrixRow(int r) {
+    // Tắt tất cả row
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_10|GPIO_PIN_11|
                                GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15,
                                GPIO_PIN_SET);
 
+    // Tắt tất cả col
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11|
                                GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15,
                                GPIO_PIN_SET);
 
-    uint8_t colData = matrix_buffer[index];
-
+    // Lấy dữ liệu cho row r
+    uint8_t colData = matrix_buffer[r];
     for (int c = 0; c < 8; c++) {
         if (colData & (1 << (7 - c))) {
-            HAL_GPIO_WritePin(GPIOB, (GPIO_PIN_8 << c), GPIO_PIN_RESET); // bật LED
-        } else {
-            HAL_GPIO_WritePin(GPIOB, (GPIO_PIN_8 << c), GPIO_PIN_SET);   // tắt LED
+            HAL_GPIO_WritePin(GPIOB, (GPIO_PIN_8 << c), GPIO_PIN_RESET);
         }
     }
 
-    switch(index){
+    // Bật đúng 1 row
+    switch(r){
         case 0: HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2,  GPIO_PIN_RESET); break;
         case 1: HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3,  GPIO_PIN_RESET); break;
         case 2: HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET); break;
@@ -308,9 +309,11 @@ void updateLEDMatrix(int index){
         case 5: HAL_GPIO_WritePin(GPIOA, GPIO_PIN_13, GPIO_PIN_RESET); break;
         case 6: HAL_GPIO_WritePin(GPIOA, GPIO_PIN_14, GPIO_PIN_RESET); break;
         case 7: HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET); break;
-        default: break;
     }
 }
+
+
+
 
 
 /* USER CODE END 0 */
@@ -346,59 +349,21 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
-  int hour = 20 , minute = 59 , second = 55;
-  setTimer0(1000);
-  setTimer1(250);
-  setTimer2(500);
-  setTimer3(10);
-  updateClockBuffer(hour, minute);
+  setTimer3(2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if (timer0_flag == 1) {
-		  timer0_flag = 0;
-		  setTimer0(1000);
-
-		  second++;
-		  if (second >= 60) {
-			  second = 0;
-			  minute++;
-		  }
-		  if (minute >= 60) {
-			  minute = 0;
-			  hour++;
-		  }
-			if (hour >= 24) {
-			  hour = 0;
-		  }
-
-		  updateClockBuffer(hour, minute);
-
-		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
+	  if (timer3_flag) {
+	      timer3_flag = 0;
+	      setTimer3(2);
+	      updateLEDMatrixRow(index_led_matrix);
+	      index_led_matrix++;
+	      if (index_led_matrix >= 8) index_led_matrix = 0;
 	  }
-	  if (timer1_flag == 1) {
-		  timer1_flag = 0;
-		  setTimer1(250);
 
-		  update7SEG(index_led);
-		  index_led++;
-		  if (index_led >= MAX_LED) index_led = 0;
-	  }
-	  if (timer2_flag == 1) {
-		  timer2_flag = 0;
-		  setTimer2(500);
-		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-	  }
-	  if (timer3_flag == 1) {
-		  timer3_flag = 0;
-		  setTimer3(10);
-		  updateLEDMatrix(index_led_matrix);
-		  index_led_matrix++;
-		  if (index_led_matrix >= MAX_LED_MATRIX) index_led_matrix = 0;
-	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -462,7 +427,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 7999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 9;
+  htim2.Init.Period = 1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -502,13 +467,13 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5
                           |GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9
                           |GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13
-                          |GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
+                          |GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_10
                           |GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14
                           |GPIO_PIN_15|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5
-                          |GPIO_PIN_6|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
+                          |GPIO_PIN_6|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_SET);
 
   /*Configure GPIO pins : PA2 PA3 PA4 PA5
                            PA6 PA7 PA8 PA9
